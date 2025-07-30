@@ -27,59 +27,44 @@ This assignment demonstrates deploying a self-hosted Gitea Git server on a Kuber
 ## ⚙️ Steps Followed
 
 ### ✅ 1. Clone and Prepare the Repository
-
-```bash
 git clone https://github.com/jpremchander/info8995-cdevops-gitea.git
 cd info8995-cdevops-gitea
-✅ 2. Add Submodule for Kubernetes Playbooks
-bash
-Copy
-Edit
+
+## ✅ 2. Add Submodule for Kubernetes Playbooks
 git submodule add https://github.com/rhildred/ansible-k8s.git k8s
 git submodule update --init --recursive
-✅ 3. Deploy Kubernetes Cluster and Gitea via Ansible
-bash
-Copy
-Edit
+
+## ✅ 3. Deploy Kubernetes Cluster and Gitea via Ansible
 ansible-playbook up.yml
-This playbook:
+playbook usecasee:
 
-Installs K3s
+1. Installs K3s
+2. Adds Helm chart repo
+3. Deploys Gitea
 
-Adds Helm chart repo
+📸 Screenshot: k8s pods + gitea pods running
 
-Deploys Gitea
+<img width="2880" height="1704" alt="image" src="https://github.com/user-attachments/assets/21c78f44-65a2-45aa-b4f2-c2093b032015" />
 
-Sets up Ingress
-
-📸 Add Screenshot: k8s pods + gitea pods running
 
 🐛 Troubleshooting & Fixes
+
 ❌ Error: helm not found
 Fix:
 Installed using Snap:
-
-bash
-Copy
-Edit
 sudo snap install helm --classic
+
 ❌ Error: Git submodule already exists
 Fix:
-
-bash
-Copy
-Edit
 git rm --cached k8s
 rm -rf k8s
 git submodule add https://github.com/rhildred/ansible-k8s.git k8s
+
 ❌ Error: unarchive failed due to missing unzip
 Fix:
-
-bash
-Copy
-Edit
 sudo apt install unzip -y
 🗄️ Custom MySQL Backend for Gitea
+
 Created a custom mysql.yml that includes:
 
 PersistentVolumeClaim
@@ -90,7 +75,10 @@ Deployment using MySQL 5.7
 
 Kubernetes Service
 
-📸 Add Screenshot: MySQL pod running and service active
+📸 Screenshot: MySQL pod running and service active
+
+<img width="2880" height="1704" alt="k8s-mysql-db" src="https://github.com/user-attachments/assets/ff5e7381-8f7e-4cc6-822c-42c6e34d5956" />
+
 
 🌐 Ngrok Port Forwarding
 Created an ngrok-portforward.yml Ansible playbook to:
@@ -101,19 +89,16 @@ Open a tunnel on port 3000
 
 Retrieve and display public Ngrok URL
 
-📸 Add Screenshot: Ngrok public URL showing Gitea in browser
-📸 Add Screenshot: Accessing Gitea via Codespace Proxy
-📸 Add Screenshot: Ngrok page loading the Gitea login screen
+📸 Screenshot: Ngrok public URL showing Gitea in browser
+<img width="2880" height="1704" alt="image" src="https://github.com/user-attachments/assets/8de93511-2137-4fe3-86d5-42db2071e90f" />
 
-🔗 Final Access URLs
-✅ Ngrok URL: (Insert screenshot showing the https://xxxx.ngrok-free.app)
+📸 Screenshot: Accessing Gitea via Codespace Proxy
+<img width="2880" height="1704" alt="ngrok-url" src="https://github.com/user-attachments/assets/abda190a-8239-4df5-95bc-620eec3728b1" />
 
-✅ Codespace Proxy: https://codespace.premchanderj.me/proxy/3000/
+
+
 
 ✅ Clean-Up
-To tear down the environment:
+to down the environment:
 
-bash
-Copy
-Edit
 ansible-playbook down.yml
