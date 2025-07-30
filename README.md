@@ -1,33 +1,119 @@
-# cdevops-gitea
-k8s gitea lab to take dev (sqlite based) to prod (mysql based)
+# INFO8995 - Assignment 3: Gitea CI/CD Deployment on Kubernetes
 
-TLDR;
+**Name:** Prem Chander  
+**Student ID:** 9015480  
+**Program Code:** INFO8995  
+**Assignment:** 3 - CI/CD with Gitea & Kubernetes  
+
+---
+
+## 📌 Objective
+
+This assignment demonstrates deploying a self-hosted Gitea Git server on a Kubernetes cluster using Helm and managing port exposure using Ngrok for public access. The goal is to automate Gitea setup and simulate CI/CD integration in a private environment (e.g., GitHub Codespaces or local K3s).
+
+---
+
+## 🏗️ Architecture Overview
+
+- Kubernetes cluster provisioned using **K3s**
+- Gitea deployed via **Helm**
+- MySQL backend deployed as a custom resource
+- Port 3000 exposed externally using **Ngrok**
+- DNS-based access via Codespace domain:  
+  `https://codespace.premchanderj.me/proxy/3000/`
+
+---
+
+## ⚙️ Steps Followed
+
+### ✅ 1. Clone and Prepare the Repository
 
 ```bash
-pip install ansible kubernetes
+git clone https://github.com/jpremchander/info8995-cdevops-gitea.git
+cd info8995-cdevops-gitea
+✅ 2. Add Submodule for Kubernetes Playbooks
+bash
+Copy
+Edit
+git submodule add https://github.com/rhildred/ansible-k8s.git k8s
 git submodule update --init --recursive
+✅ 3. Deploy Kubernetes Cluster and Gitea via Ansible
+bash
+Copy
+Edit
 ansible-playbook up.yml
-```
+This playbook:
 
-Wait until `kubectl get pod` shows all pods running and:
+Installs K3s
 
-```bash
-kubectl port-forward svc/gitea-http 3000:3000
-```
+Adds Helm chart repo
 
-Now you should be able to access gitea in development mode.
+Deploys Gitea
 
-The challenge is to run this in production mode.
+Sets up Ingress
 
-### Points to Cover
+📸 Add Screenshot: k8s pods + gitea pods running
 
-## Marking
+🐛 Troubleshooting & Fixes
+❌ Error: helm not found
+Fix:
+Installed using Snap:
 
-|Item|Out Of|
-|--|--:|
-|use [the gitea helm](https://gitea.com/gitea/helm-gitea) to make the repository data persistent|3|
-|make gitea use external database|3|
-|Use [this article](https://blog.techiescamp.com/using-ngrok-with-kubernetes/) to expose your gitea instance publically|2|
-|make the README easy to use and ACCURATE|2|
-|||
-|total|10|
+bash
+Copy
+Edit
+sudo snap install helm --classic
+❌ Error: Git submodule already exists
+Fix:
+
+bash
+Copy
+Edit
+git rm --cached k8s
+rm -rf k8s
+git submodule add https://github.com/rhildred/ansible-k8s.git k8s
+❌ Error: unarchive failed due to missing unzip
+Fix:
+
+bash
+Copy
+Edit
+sudo apt install unzip -y
+🗄️ Custom MySQL Backend for Gitea
+Created a custom mysql.yml that includes:
+
+PersistentVolumeClaim
+
+Secret with secure credentials
+
+Deployment using MySQL 5.7
+
+Kubernetes Service
+
+📸 Add Screenshot: MySQL pod running and service active
+
+🌐 Ngrok Port Forwarding
+Created an ngrok-portforward.yml Ansible playbook to:
+
+Download and configure Ngrok
+
+Open a tunnel on port 3000
+
+Retrieve and display public Ngrok URL
+
+📸 Add Screenshot: Ngrok public URL showing Gitea in browser
+📸 Add Screenshot: Accessing Gitea via Codespace Proxy
+📸 Add Screenshot: Ngrok page loading the Gitea login screen
+
+🔗 Final Access URLs
+✅ Ngrok URL: (Insert screenshot showing the https://xxxx.ngrok-free.app)
+
+✅ Codespace Proxy: https://codespace.premchanderj.me/proxy/3000/
+
+✅ Clean-Up
+To tear down the environment:
+
+bash
+Copy
+Edit
+ansible-playbook down.yml
